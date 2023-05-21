@@ -22,6 +22,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
         id: memory.id,
         coverUrl: memory.coverUrl,
         excerpt: memory.content.substring(0, 115).concat('...'),
+        createdAt: memory.createdAt,
       }
     })
   })
@@ -63,6 +64,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
         userId: request.user.sub,
       },
     })
+
     return memory
   })
 
@@ -87,7 +89,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
       },
     })
 
-    if (memory?.userId !== request.user.sub) {
+    if (memory.userId !== request.user.sub) {
       return reply.status(401).send()
     }
 
@@ -118,7 +120,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
       },
     })
 
-    if (memory?.userId !== request.user.sub) {
+    if (memory.userId !== request.user.sub) {
       return reply.status(401).send()
     }
 
