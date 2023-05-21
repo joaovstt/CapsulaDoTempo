@@ -1,61 +1,56 @@
-import { useEffect } from 'react';
-import { useRouter } from "expo-router";
-import { Text, TouchableOpacity, View } from 'react-native';
+import { useEffect } from 'react'
+import { useRouter } from 'expo-router'
+import { Text, TouchableOpacity, View } from 'react-native'
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from 'expo-secure-store'
 
 import NLWLogo from '../src/assets/nlw-spacetime-logo.svg'
-import { api } from '../src/lib/api';
+import { api } from '../src/lib/api'
 
-const discovery={
+const discovery = {
   authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-  tokenEndpoint: 'https://github.com/login/oauth/acess_token',
-  revocationEndpoint: 
-    'https://github.com/settings/connections/applications/f6f7831e7a4434e728db',
+  tokenEndpoint: 'https://github.com/login/oauth/access_token',
+  revocationEndpoint:
+    'https://github.com/settings/connections/applications/d26f194cc5d5132a51be',
 }
 
 export default function App() {
   const router = useRouter()
 
-  const [,response, signInWithGithub] = useAuthRequest(
+  const [, response, signInWithGithub] = useAuthRequest(
     {
-      clientId: 'f6f7831e7a4434e728db',
+      clientId: 'd26f194cc5d5132a51be',
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
-        scheme: 'CapsulaDoTempo'
+        scheme: 'nlwspacetime',
       }),
     },
     discovery,
   )
 
-    async function handleGithubOAuthCode(code: string){
-      const response = await api.post('/register',{
-        code,
-      })
+  async function handleGithubOAuthCode(code: string) {
+    const response = await api.post('/register', {
+      code,
+    })
 
-      const {token} = response.data
+    const { token } = response.data
 
-      await SecureStore.setItemAsync('token', token)
+    await SecureStore.setItemAsync('token', token)
 
-      router.push('/memories')
-    }
+    router.push('/memories')
+  }
 
-  useEffect(() => {
-//    console.log(
-//       makeRedirectUri({
-//      scheme: 'CapsulaDoTempo'
-//    }),
-//    )
+  useEffect(() => { 
 
-    if(response?.type === 'success'){
-      const{code} = response.params;
-      
+    if (response?.type === 'success') {
+      const { code } = response.params
+
       handleGithubOAuthCode(code)
     }
-  }, [response]);
+  }, [response])
 
   return (
-    <View className=" items-center px-8 py-10 flex-1">      
+    <View className="flex-1 items-center px-8 py-10">
       <View className="flex-1 items-center justify-center gap-6">
         <NLWLogo />
 
@@ -64,22 +59,25 @@ export default function App() {
             Sua cápsula do tempo
           </Text>
           <Text className="text-center font-body text-base leading-relaxed text-gray-100">
-            Colecione momentos marcantes da sua jornada e compartilhe (se quiser) 
-            com o mundo!
+            Colecione momentos marcantes da sua jornada e compartilhe (se
+            quiser) com o mundo!
           </Text>
         </View>
-        <TouchableOpacity activeOpacity={0.7} className="rounded-full bg-green-500 px-5 py-2"
-        onPress={()=>signInWithGithub()}
+
+        <TouchableOpacity
+          activeOpacity={0.7}
+          className="rounded-full bg-green-500 px-5 py-2"
+          onPress={() => signInWithGithub()}
         >
-          <Text className="font-alt text-sm uppercase text-black">Cadastrar lembrança</Text>
+          <Text className="font-alt text-sm uppercase text-black">
+            Cadastrar lembrança
+          </Text>
         </TouchableOpacity>
       </View>
 
       <Text className="text-center font-body text-sm leading-relaxed text-gray-200">
-        Todos os direitos reservados a João Vitor Silva Teixeira
+      Todos os direitos reservados a João Vitor Silva Teixeira
       </Text>
-
-
     </View>
-  );
+  )
 }
